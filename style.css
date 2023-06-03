@@ -1,0 +1,183 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(32, 32, 32);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.algo-text {
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+}
+
+.action-btn {
+  padding: 6px 12px;
+  font-size: 18px;
+  font-weight: bold;
+  background-color: transparent;
+  border: 2px solid white;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s ease-out;
+}
+
+.action-btn.tooltip {
+  padding: 6px 12px;
+  position: relative;
+}
+
+.action-btn.tooltip::after {
+  position: absolute;
+  content: attr(data-message);
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  background-color: white;
+  color: rgb(32, 32, 32);
+  box-shadow: 0 0 5px white;
+  padding: 5px 10px;
+  font-size: 12px;
+  border-radius: 8px;
+  z-index: 10;
+  opacity: 0;
+  transition: 0.2s ease-out;
+}
+
+.action-btn.tooltip:hover::after {
+  opacity: 1;
+}
+
+.action-btn:hover {
+  box-shadow: 0 0 5px rgba(255, 255, 255, 1);
+}
+
+.action-btn.active {
+  background-color: white;
+  color: rgb(32, 32, 32);
+  box-shadow: 0 0 5px white;
+}
+
+#graphGrid {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+}
+
+.grid-row {
+  display: flex;
+  gap: inherit;
+}
+
+.grid-cell {
+  width: 20px;
+  height: 20px;
+  background-color: rgb(55, 195, 238);
+  box-shadow: 0 0 3px rgb(55, 195, 238);
+}
+
+@keyframes grow-path {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.5);
+    border-radius: 20%;
+  }
+  100% {
+    transform: scale(1);
+    background-color: rgb(253, 47, 116);
+    box-shadow: 0 0 3px rgb(253, 47, 116);
+    border-radius: 0%;
+  }
+}
+
+.grid-cell.active {
+  background-color: rgb(253, 250, 47);
+  box-shadow: 0 0 3px rgb(253, 250, 47);
+
+  animation: grow-path 0.5s ease-out forwards;
+}
+
+@keyframes grow-cell {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.5);
+    border-radius: 20%;
+  }
+  100% {
+    transform: scale(1);
+    border-radius: 0%;
+  }
+}
+
+#graphGrid[data-is-clear='true'][data-walls-mode='false'] .grid-cell:not(.wall):hover,
+.grid-cell.target {
+  background-color: rgb(255, 215, 36);
+  box-shadow: 0 0 3px rgb(255, 215, 36);
+
+  animation: grow-cell 0.3s ease-out forwards;
+}
+
+#graphGrid[data-is-clear='false'] .grid-cell.target {
+  animation-duration: 0.5s;
+}
+
+#graphGrid[data-walls-mode='true'] .grid-cell:hover,
+.grid-cell.wall {
+  background-color: rgb(32, 32, 32);
+  box-shadow: 0 0 3px rgb(32, 32, 32);
+
+  animation: grow-cell 0.3s ease-out forwards;
+}
+
+@keyframes highlight-path {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.5);
+    border-radius: 20%;
+  }
+  70% {
+    background-color: rgb(255, 215, 36);
+    box-shadow: 0 0 3px rgb(255, 215, 36);
+  }
+  100% {
+    transform: scale(1);
+    border-radius: 0%;
+    background-color: rgb(255, 215, 36);
+    box-shadow: 0 0 3px rgb(255, 215, 36);
+  }
+}
+
+.grid-cell.path {
+  background-color: rgb(253, 47, 116);
+  box-shadow: 0 0 3px rgb(253, 47, 116);
+
+  animation: highlight-path 0.4s ease-out forwards;
+}
