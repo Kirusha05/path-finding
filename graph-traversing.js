@@ -7,7 +7,7 @@ const twoWayBfsBtn = document.getElementById('twoWayBfsBtn');
 const dfsBtn = document.getElementById('dfsBtn');
 
 const gridX = 30;
-const gridY = 10;
+const gridY = 20;
 const gridArray = [];
 
 // Create grid element with rows and cols
