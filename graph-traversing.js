@@ -1,7 +1,8 @@
 const graphGridElement = document.getElementById('graphGrid');
 const restartBtn = document.getElementById('restartBtn');
 const wallsModeBtn = document.getElementById('wallsModeBtn');
-const wallsRemoveBtn = document.getElementById('wallsRemoveBtn');
+const randomMazeBtn = document.getElementById('randomMazeBtn');
+const clearBoardBtn = document.getElementById('clearBoardBtn');
 const bfsBtn = document.getElementById('bfsBtn');
 const twoWayBfsBtn = document.getElementById('twoWayBfsBtn');
 const dfsBtn = document.getElementById('dfsBtn');
@@ -133,6 +134,8 @@ let isRunning = false;
 // Disable all the cells and clear the search points
 let animationTimers = [];
 restartBtn.addEventListener('click', (event) => {
+  if (mazeAnimationIsRunning) return;
+
   for (const animationTimer of animationTimers) {
     clearTimeout(animationTimer);
   }
@@ -141,6 +144,7 @@ restartBtn.addEventListener('click', (event) => {
   pathAnimations = [];
   pathAnimationsStart = [];
   pathAnimationsDestination = [];
+  mazeAnimations = [];
 
   isRunning = false;
   searchPoints.startCell = null;
@@ -169,13 +173,19 @@ wallsModeBtn.addEventListener('click', (event) => {
 });
 
 // Remove walls and clear the whole grid, reset everything if the animation is not running
-wallsRemoveBtn.addEventListener('click', () => {
+clearBoardBtn.addEventListener('click', () => {
   if (isRunning) return;
 
+  for (const animationTimer of mazeAnimationTimers) {
+    clearTimeout(animationTimer);
+  }
+
+  hasGeneratedMaze = false;
   animationTimers = [];
   pathAnimations = [];
   pathAnimationsStart = [];
   pathAnimationsDestination = [];
+  mazeAnimations = [];
 
   searchPoints.startCell = null;
   searchPoints.endCell = null;
@@ -201,10 +211,50 @@ const convertToWall = (i, j) => {
   selectedCell.classList.add('wall');
 };
 
+let hasGeneratedMaze = false;
+let mazeAnimations = [];
+let mazeAnimationTimers = [];
+let mazeAnimationIsRunning = false;
+
+randomMazeBtn.addEventListener('click', () => {
+  if (isRunning || hasGeneratedMaze) return;
+
+  hasGeneratedMaze = true;
+
+  for (let i = 0; i < gridY; i++) {
+    for (let j = 0; j < gridX; j++) {
+      // Return if the current cell is a target for the future search
+      const selectedCell = graphGridElement.childNodes[i].childNodes[j];
+      if (selectedCell.classList.contains('target')) continue;
+
+      // 20% chance to convert the cell to a wall block
+      if (Math.random() > 0.7) {
+        mazeAnimations.push([i, j]);
+      }
+    }
+  }
+
+  const mazeAnimationDelay = 30; // ms
+  shuffleArray(mazeAnimations);
+  mazeAnimationIsRunning = true;
+
+  for (let i = 0; i < mazeAnimations.length; i++) {
+    const timer = setTimeout(() => {
+      convertToWall(...mazeAnimations[i]);
+      if (i === mazeAnimations.length - 1) mazeAnimationIsRunning = false;
+    }, i * mazeAnimationDelay);
+    mazeAnimationTimers.push(timer);
+  }
+});
+
 // Select start and end cells to start the animation automatically (for the moment)
 const gridCellSelectPoints = (i, j) => {
   // Don't do anything if cell is a wall or the animation is currently running
-  if (gridArray[i][j] === 2 || (searchPoints.startCell && searchPoints.endCell))
+  if (
+    gridArray[i][j] === 2 ||
+    mazeAnimationIsRunning ||
+    (searchPoints.startCell && searchPoints.endCell)
+  )
     return;
 
   const selectedCell = graphGridElement.childNodes[i].childNodes[j];
